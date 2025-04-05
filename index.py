@@ -39,8 +39,14 @@ x = stack_dict(inputs)
 
 # Collect the features from the DataFrame, stack them together and normalize
 # their values by passing them to the normalization layer.
+# Collect the features from the DataFrame, stack them together and normalize
+# their values by passing them to the normalization layer.
 normalizer = tf.keras.layers.Normalization(axis=-1)
-normalizer.adapt(stack_dict(dict(features)))
+
+# Create a tensor dataset from the features and adapt the normalizer
+feature_ds = tf.data.Dataset.from_tensor_slices(tf.convert_to_tensor(features.values, dtype=tf.float32)).batch(32)
+normalizer.adapt(feature_ds)
+
 
 # Build the main body of the model using a normalization layer, two dense
 # rectified-linear layers, and a single output node for classification.
@@ -75,7 +81,7 @@ def dataframe_to_dataset(dataframe):
       ((dict(dataframe), labels)))
   return dataset
 
-  RANDOM_STATE = 200
+RANDOM_STATE = 200
 BATCH_SIZE = 100
 EPOCHS = 10
 
